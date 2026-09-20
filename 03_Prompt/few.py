@@ -46,7 +46,7 @@ A->{{
 }}
 
 """
-
+# Using few shot prompting u can also bind the output quality
 response = client.chat.completions.create(
     model="gemini-3.6-flash",
     messages=[
