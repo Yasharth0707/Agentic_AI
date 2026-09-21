@@ -1,0 +1,45 @@
+#Prompt Styles
+
+
+## CHAT-ML Style
+This the style we have been using and will use in the future in this course
+
+## Alpaca Prompt 
+
+###Instructions: <SYSTEM_PROMPT>\n
+## Input : <USER_QUERY>
+## Response:\n
+
+
+Eg
+ messages=[
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT
+        },
+        {
+            "role": "user",
+            "content": "Can u crack a joke?"
+        }
+    ] 
+ye hai jo humne pehle use kiya tha woh wala style and below is the aplaca version of it
+
+Below is an instruction that describes a task. Write a response that appropriately completes the request.
+
+### Instruction:
+Can u crack a joke?
+
+### Response:
+
+
+
+### INST  PROMPTING(used by Llama2 )
+[INST] What is the time now? [/INST]
+Eg:
+[INST]
+<<SYS>>
+{SYSTEM_PROMPT}
+<</SYS>>
+
+Can u crack a joke?
+[/INST]
