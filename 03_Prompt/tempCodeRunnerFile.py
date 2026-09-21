@@ -7,17 +7,17 @@ import json
 load_dotenv()
 
 # Verify variable name
-api_key = os.getenv("GENAI_API_KEY")
+api_key = os.getenv("OPENAI_API_KEY")
 
 # Print first 5 chars to verify key loading without exposing it
 if not api_key:
-    print(" ERROR: GENAI_API_KEY is missing or None!")
+    print(" ERROR: OPENAI_API_KEY is missing or None!")
 else:
     print(f" Key Loaded Successfully: {api_key[:5]}...")
 
 client = OpenAI(
     api_key=api_key,
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+    
 )
 
 SYSTEM_PROMPT="""
@@ -47,6 +47,8 @@ SYSTEM_PROMPT="""
 
 """
 
+print("\n\n\n")
+
 message_history=[
     {
         "role": "system",
@@ -54,38 +56,43 @@ message_history=[
     },
 ]
 
-response = client.chat.completions.create(
-    model="gemini-3.6-flash",
-    response_format={"type": "json_object"},
-    messages=[
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT
-        },
-        {
-            "role": "user",
-            "content": "Hey , write a code to add n numbers in c++"
-            
-        },
-        #Manually keep adding messages to History to keep the context of the conversation
-        {
-            "role": "assistant",
-            "content":json.dumps({"step":"PLAN","content":"User is interested in adding n numbers in c++"})
-        },
-        {
-        "role": "user",
-        "content": "Continue with the next PLAN or OUTPUT step."  # Added user turn
-        },
-        {
-            "role": "assistant",
-            "content":json.dumps({"step":"PLAN","content":"I will construct a standard C++ program that reads the integer 'n', then iterates 'n' times using a loop to collect inputs and compute their total sum, finally printing the result."})
-        },
-        {
-            "role": "user",
-            "content": "Continue with the next PLAN or OUTPUT step."  # Added user turn
-        }
-        
-    ]
-)
+user_query=input("Enter your query: ")
+message_history.append({
+    "role": "user",
+    "content": user_query
+})
 
-print(response.choices[0].message.content)
+while True:
+    response = client.chat.completions.create(
+    model="gpt-4o",  # Ensure exact model ID
+    response_format={"type": "json_object"},
+    messages=message_history,
+)
+    raw_result=response.choices[0].message.content
+    message_history.append({
+        "role": "assistant",
+        "content": raw_result
+    })
+    parsed_result=json.loads(raw_result)
+
+    step = parsed_result.get("step")
+    content = parsed_result.get("content")
+
+    if step == "START":
+        print("Starting LLM reasoning...", content)
+        message_history.append({"role": "user", "content": "Continue."})
+        continue
+
+    if step == "PLAN":
+        print("Planning and thinking process...", content)
+        message_history.append({"role": "user", "content": "Continue."})
+        continue
+
+    if step == "OUTPUT":
+        print("\nFinal Output:\n", content)
+        break
+
+
+print("\n\n\n")
+
+
