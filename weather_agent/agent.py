@@ -23,6 +23,10 @@ client = OpenAI(
     
 )
 
+def run_command(command: str):
+    result=os.system(command)
+    return result
+
 def get_weather_info(city: str):
     url=f"https://wttr.in/{city.lower()}?format=%C+%t"
     response=requests.get(url)
@@ -34,7 +38,8 @@ def get_weather_info(city: str):
 
 
 available_tools = {
-    "get_weather_info": get_weather_info
+    "get_weather_info": get_weather_info,
+    "run_command": run_command
 }
 
 SYSTEM_PROMPT="""
@@ -54,6 +59,8 @@ SYSTEM_PROMPT="""
 
     Available Tools:
     1. get_weather_info(city: str) -> str: This tool retrieves the current weather information for a specified city. It returns a string containing the weather description and temperature.
+
+    2. run_command(command: str) -> int: This tool executes a shell command on the server and returns the exit status of the command. It can be used for various system-level operations.
 
     Example 1:
     START: {"step":"START","content":"Hey , can u solve 2+3*5/10 for me?"}
@@ -154,5 +161,7 @@ while True:
 
 
 print("\n\n\n")
+
+
 
 
